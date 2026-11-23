@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Verificación de Seguridad | Acceso Seguro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #657ad8 0%, #c8c8c8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animación de fondo */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        /* Contenedor principal */
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            width: 100%;
+            max-width: 480px;
+            backdrop-filter: blur(10px);
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header del login */
+        .login-header {
+            background-color: rgb(88, 141, 255);
+            padding: 30px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header img {
+            border-radius: 15px;
+            width: 80px;
+            margin-bottom: 15px;
+        }
+
+        /* Contenido del formulario */
+        .login-content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        /* Título principal */
+        .verification-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .verification-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* Loader */
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Contador */
+        .counter-container {
+            margin: 25px 0 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .counter-label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .counter-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #3b82f6;
+            display: inline-block;
+            min-width: 80px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
+        }
+
+        .counter-text {
+            font-size: 14px;
+            color: #888;
+            margin-top: 10px;
+            display: block;
+        }
+
+        /* Mensaje de advertencia */
+        .warning-message {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .warning-message p {
+            color: #856404;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+
+        .warning-message i {
+            margin-right: 8px;
+        }
+
+        /* Barra de progreso */
+        .progress-bar-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #667eea);
+            width: 100%;
+            animation: progressShrink 15s linear forwards;
+            border-radius: 3px;
+        }
+
+        @keyframes progressShrink {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        /* Mensaje de error */
+        .error-message {
+            background-color: #fee;
+            color: #c33;
+            border-left: 4px solid #c33;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            margin-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 10px;
+            }
+            
+            .login-header {
+                padding: 20px 20px;
+            }
+            
+            .login-content {
+                padding: 30px 20px;
+            }
+            
+            .verification-title {
+                font-size: 18px;
+            }
+            
+            .counter-number {
+                font-size: 36px;
+                min-width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToUIe9A6QvLvypxEQu3Y8mJ7WCb9L6pROqNg&s" alt="Logo de seguridad">
+            <h1 style="font-size: 20px; margin-top: 10px;">Verificación de Seguridad</h1>
+        </div>
+        
+        <div class="login-content">
+            <div class="verification-title">
+                🔒 Verificando tu identidad
+            </div>
+            
+            <div class="verification-subtitle">
+                SEGURIDAD CRITICA, <strong> INTENTA VALIDAR NUEVAMENTE TU ROSTRO. BUSCA UN LUGAR ILUMINADO Y ASEGURATE DE QUE SE VEAN BIEN TUS RASGOS FACIALES
+            </strong></div>
+            
+            <!-- Loader animado -->
+            <div class="loader"></div>
+            
+            <!-- Barra de progreso -->
+            <div class="progress-bar-container">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <!-- Contador -->
+            <div class="counter-container">
+                <span class="counter-label">⏱️ Tiempo restante</span>
+                <div>
+                    <span class="counter-number" id="counter">8</span>
+                </div>
+                <span class="counter-text">segundos para completar la verificación</span>
+            </div>
+            
+            <!-- Mensaje de advertencia -->
+            <div class="warning-message">
+                <p>⚠️ <strong>Importante:</strong></p>
+                <p>• No cierres ni actualices esta ventana</p>
+                <p>• La verificación se completará automáticamente</p>
+                <p>• Mantén una conexión estable a internet</p>
+            </div>
+            
+            <div id="error-message" class="error-message">
+                ❌ Error en la verificación. Por favor, intenta de nuevo.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Contador regresivo de 15 a 0
+        let count = 8;
+        const counterElement = document.getElementById('counter');
+        const errorMessage = document.getElementById('error-message');
+
+        const countdown = setInterval(() => {
+            count--;
+            counterElement.textContent = count;
+            
+            // Cambiar color cuando queden pocos segundos
+            if (count <= 5) {
+                counterElement.style.color = '#ff9800';
+            }
+            if (count <= 3) {
+                counterElement.style.color = '#dc2626';
+            }
+            
+            if (count === 0) {
+                clearInterval(countdown);
+                // Redirigir a la siguiente página
+                try {
+                    window.location.href = 'face02.html';
+                } catch (e) {
+                    errorMessage.style.display = 'block';
+                    // Si hay error, reintentar después de 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'face02.html';
+                    }, 2000);
+                }
+            }
+        }, 1000);
+        
+   
+        
+        // Prevenir clic derecho y atajos
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            const blocked = ['F5', 'F12', 'u', 'I', 'r', 'R'];
+            if (blocked.includes(e.key) && (e.ctrlKey || e.shiftKey)) {
+                e.preventDefault();
+            }
+            // Prevenir actualizar con F5
+            if (e.key === 'F5') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

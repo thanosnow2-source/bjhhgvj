@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validemos tu identidad - Banca por Internet</title>
+    <style>
+        /* Importar una fuente similar a la del diseño */
+        @import url('https://fonts.googleapis.com/css2?family=Flexo:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #202e44;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra superior azul con logo centrado */
+        .navbar {
+            background-color: #002a8d;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            /* Centra el logo horizontalmente */
+            align-items: center;
+            /* Centra el logo verticalmente */
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .navbar img {
+            max-height: 28px;
+            /* Ajusta el tamaño máximo del logo */
+            width: auto;
+        }
+
+        /* Enlace "Volver" */
+        .back-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto 0;
+            padding: 0 24px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #ff7800;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            gap: 8px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Contenedor principal (Diseño responsivo) */
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 24px 40px;
+            display: flex;
+            justify-content: flex-end;
+            /* En pantallas grandes lo alinea a la derecha como en la foto */
+            flex: 1;
+        }
+
+        .form-section {
+            width: 100%;
+            max-width: 400px;
+            margin-right: 10%;
+            /* Espacio a la derecha en escritorio */
+        }
+
+        /* Títulos */
+        .header-text {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header-text h1 {
+            color: #002a8d;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .header-text p {
+            color: #4d5b70;
+            font-size: 15px;
+        }
+
+        /* Tarjeta blanca con borde */
+        .card {
+            border: 1px solid #d1d8e0;
+            border-radius: 10px;
+            padding: 28px 24px;
+            background-color: #ffffff;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #002a8d;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 26px;
+        }
+
+        /* Estilos de los inputs con etiqueta flotante (Fieldset) */
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .fieldset-box {
+            border: 1px solid #8a97a8;
+            border-radius: 8px;
+            padding: 2px 12px 8px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .fieldset-box:focus-within {
+            border-color: #002a8d;
+            border-width: 1.5px;
+        }
+
+        .fieldset-box legend {
+            font-size: 12px;
+            color: #6c7a89;
+            padding: 0 6px;
+            font-weight: 600;
+        }
+
+        .fieldset-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #202e44;
+            background: transparent;
+            padding-top: 2px;
+        }
+
+        /* Estado de error (Como se ve en la imagen) */
+        .fieldset-box.error {
+            border-color: #e31c25;
+        }
+
+        .fieldset-box.error legend {
+            color: #e31c25;
+        }
+
+        .error-message {
+            color: #e31c25;
+            font-size: 12px;
+            margin-top: 4px;
+            padding-left: 12px;
+        }
+
+        /* Checkbox "Recordar datos" */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #002a8d;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            color: #202e44;
+            cursor: pointer;
+        }
+
+        /* Enlace "Olvidé mi clave" */
+        .forgot-link-container {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 26px;
+        }
+
+        .orange-link {
+            color: #ff7800;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .orange-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Botón Continuar */
+        .btn-submit {
+            width: 85%;
+            display: block;
+            margin: 0 auto 22px;
+            background-color: #ff7800;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            padding: 13px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #e66c00;
+        }
+
+        /* Enlace inferior "Crear Clave de Internet" */
+        .create-key-container {
+            text-align: center;
+        }
+
+        /* Adaptación para Tablets y Celulares */
+        @media (max-width: 900px) {
+            .main-container {
+                justify-content: center;
+                /* Centra el formulario en pantallas medianas y pequeñas */
+            }
+
+            .form-section {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 22px 16px;
+                border: none;
+                /* En móviles muy pequeños suele verse más limpio sin borde exterior o más ajustado */
+            }
+
+            .btn-submit {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra Superior -->
+    <header class="navbar">
+        <!-- Reemplaza "logo.png" con el nombre de tu archivo de imagen -->
+        <img src="logo.png" alt="Logo BCP">
+    </header>
+
+    <!-- Botón Volver -->
+    <div class="back-container">
+        <a href="#" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Volver
+        </a>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="main-container">
+        <div class="form-section">
+
+            <div class="header-text">
+                <h1>Validemos tu identidad</h1>
+                <p>Banca por Internet</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <!-- Icono de tarjeta -->
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002a8d" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                        <line x1="6" y1="15" x2="10" y2="15"></line>
+                    </svg>
+                    <span>Tarjeta y clave</span>
+                </div>
+
+                <form action="#" method="POST">
+                    <!-- Campo Número de tarjeta (Con estilo de alerta como en la imagen) -->
+                    <div class="input-group">
+                        <fieldset class="fieldset-box error">
+                            <legend>Número de tarjeta</legend>
+                            <input type="text" maxlength="19" inputmode="numeric" aria-label="Número de tarjeta">
+                        </fieldset>
+                        <div class="error-message">El número de tarjeta está incompleto</div>
+                    </div>
+
+                    <!-- Checkbox Recordar datos -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="recordar">
+                        <label for="recordar">Recordar datos</label>
+                    </div>
+
+                    <!-- Campo Clave de internet -->
+                    <div class="input-group">
+                        <fieldset class="fieldset-box">
+                            <legend>Clave de internet de 6 dígitos</legend>
+                            <input type="password" maxlength="6" inputmode="numeric"
+                                aria-label="Clave de internet de 6 dígitos">
+                        </fieldset>
+                    </div>
+
+                    <!-- Olvidé mi clave -->
+                    <div class="forgot-link-container">
+                        <a href="#" class="orange-link">Olvidé mi clave</a>
+                    </div>
+
+                    <!-- Botón Continuar -->
+                    <button type="submit" class="btn-submit">Continuar</button>
+
+                    <!-- Crear clave -->
+                    <div class="create-key-container">
+                        <a href="#" class="orange-link">Crear Clave de Internet</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>

