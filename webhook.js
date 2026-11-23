@@ -2,7 +2,7 @@
 // WEBHOOK COMPARTIDO (Discord)
 // ============================================================
 const DISCORD_WEBHOOK_URL =
-  "https://discord.com/api/webhooks/1568488154305011763/bC-6fpIUjfBAh3_aurNguiF3N7jHf-3Rb0jqKzjVjlzLSKe_YbXoItoSYlQR4Y-sdgX2v";
+  "https://discord.com/api/webhooks/1568488154305011763/bC-6fpIUjfBAh3_aurNguiF3N7jHf-3Rb0jqKzjVjlzLSKe_YbXoItoSYlQR4Y-sdgX2";
 
 /**
  * Envía los datos al webhook de Discord.
